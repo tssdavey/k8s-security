@@ -13,6 +13,9 @@
     * Your supply chain, use trivy.
     * 
 
+* Your data
+    * Use encrypted storageclasses
+
 
 ## Out of pod
 * Pod -> node
