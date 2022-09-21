@@ -22,13 +22,18 @@
 * Your data
     * At the end of the day this is probably what any malicious actor is after. If you're storing it in eg. an external database keep the creds in a k8s secret and inject it into pods at runtime. If your workloads are storing data, then be sure to use an encrypted storageclass and again store the creds in a secret injected at runtime, make sure that the data is also encrypted in transit if using eg. an NFS share.
 
-## Out of pod
-* Pod -> node
-* Pod -> pod
-* Pod -> api server
 ## Within cluster
-* Network policies
-* 
+Here we assume that something has been compromised, how do we stop it from getting worse.
+* Pod -> Node
+    * Run your containers unrpivillaged
+    * Don't allow writing to root filesystem
+    * Use apparmor or secomp for fine-grained control
+    * Use gvisor if you don't trust images
+
+
+    * Pod -> Pod Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engree policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
+    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster.
+    * 
 
 ## Monitoring
 * Reactive monitoring aka auditing
