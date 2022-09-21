@@ -3,9 +3,10 @@
 # Defence in Depth
 ## Attack surface
 * Your nodes. 
-    * Where are they and who has access to them. If you're running nodes yourself think about which segments they're deployed into and prefer private        subnets.
-    * Enforce zero-trust networking between your nodes. See (https://kubernetes.io/docs/reference/ports-and-protocols/) for the list of ports you will need to explicitly allow.
-    * if you're using a cloud service like AKS, EKS or GKE each configures node access in their own way, for example AKS doesn't even have ssh to nodes enabled by default - think about which user & service accounts have access to your nodes, and always ahere to the principal of least privilage. For example GKE offers fine-grained RBAC control, with the roles/container.nodeServiceAccount role.
+    * If you're running k8s yourself put your nodes in a private subnet. Configure load balancers / firewalls to allow traffic in and out of your subnet.
+    * Enforce zero-trust networking between your nodes. See [here](https://kubernetes.io/docs/reference/ports-and-protocols/) for the list of ports you will need to explicitly allow.
+    * if you're using a cloud service like AKS, EKS or GKE each configures node access in their own way. If it's not needed completely lock down access to your nodes - AKS for example doesn't allow ssh to nodes by default.
+    * If you do need access to your nodes adhere to the principal of least privillage, if the cloud provider is managed your nodes, lock down access using their IAM, for example GKE offers a [roles/container.nodeServiceAccount](https://cloud.google.com/kubernetes-engine/docs/how-to/iam#predefined) role. If you're managing nodes yourself, eg. using EKS self managed nodes lock down access to the autoscaling group. more here***
 
 * Kube-api server. 
     * Lets start with the basics. Turn on authentication. This isn't as silly as you might think though. By default, the kubelet process actually accepts unauthenticated api calls (https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/)- turn this off asap
