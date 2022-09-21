@@ -1,4 +1,4 @@
-# how to secure your k8s clusters in the real world
+# How to secure your k8s clusters in the real world
 
 # Defence in Depth
 ## Attack surface
@@ -31,11 +31,12 @@ Here we assume that something has been compromised, how do we stop it from getti
     * Use gvisor if you don't trust images
 
 
-    * Pod -> Pod Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engree policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
-    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster.
-    * 
+* Pod -> Pod 
+    * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engree policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
+    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster. 
 
-## Monitoring
-* Reactive monitoring aka auditing
+## Alterting
+As security practitioners we want to be proactive rather than reactive, having logs so you can understand why an event happened is good. Having alters so that you can catch an event *as* it's happening is way better.
 * Proactive monitoring
-- 
+    * Use Falco. It comes with a comprehensive set of tools out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
+    * Use kube-api audit server logs. These can be really powerful if used well, I recommend auditing every change made to a secret or service account - and setting up a simple dashboard that alerts for example every time a kubectl get secret happens - this shouldn't be happening in your prod clusters.
