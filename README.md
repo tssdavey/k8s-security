@@ -1,5 +1,6 @@
 # How to secure your k8s clusters in the real world
 
+It's not about if things go wrong - it's about what you do when they do.
 # Defence in Depth
 ## Attack surface
 * Your nodes. 
@@ -26,18 +27,17 @@
 ## Within cluster
 Here we assume that something has been compromised, how do we stop it from getting worse.
 * Pod -> Node
-    * Run your containers unrpivillaged
-    * Don't allow writing to root filesystem
-    * Use apparmor or secomp for fine-grained control
-    * Use gvisor if you don't trust images
+    * Enforce containers running in non-privillaged mode using (securitycontexts)[https://kubernetes.io/docs/tasks/configure-pod-container/security-context/]
+    * If your pod doesn't need to, dissalow writing to the root file system using securitycontexts, if it does need to then use apparmor or secomp for fine-grained control over which files can be edited
+    * If you need to run untrusted images, use gvisor to run these within their own virtual kernel.
 
 
 * Pod -> Pod 
-    * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engree policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
-    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster. 
+    * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engress policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
+    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster, if you're using a service mesh such as (Istio)[https://istio.io/latest/docs/tasks/security/authentication/mtls-migration/] or (Anthos)[https://cloud.google.com/service-mesh/docs/by-example/mtls] this will come out-of-the-box, otherwise you'll need to implement it yourself.
 
 ## Alterting
 As security practitioners we want to be proactive rather than reactive, having logs so you can understand why an event happened is good. Having alters so that you can catch an event *as* it's happening is way better.
 * Proactive monitoring
-    * Use Falco. It comes with a comprehensive set of tools out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
+    * Always use Falco. It comes with a comprehensive set of rule out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
     * Use kube-api audit server logs. These can be really powerful if used well, I recommend auditing every change made to a secret or service account - and setting up a simple dashboard that alerts for example every time a kubectl get secret happens - this shouldn't be happening in your prod clusters.
