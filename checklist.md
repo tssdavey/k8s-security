@@ -27,10 +27,9 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
 ## Within cluster
 Here we assume that something has been compromised, how do we stop it from getting worse.
 * Pod -> Node
-    * Enforce containers running in non-privillaged mode using (securitycontexts)[https://kubernetes.io/docs/tasks/configure-pod-container/security-context/]
-    * If your pod doesn't need to, dissalow writing to the root file system using securitycontexts, if it does need to then use apparmor or secomp for fine-grained control over which files can be edited
-    * If you need to run untrusted images, use gvisor to run these within their own virtual kernel.
-
+    * Enforce containers running in non-privillaged mode and disallow writing to the root file system using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+    * If your pod needs to write to root filesystem, or make syscalls then use apparmor or secomp to allow only what the pod requires and no more.
+    * If you need to run untrusted images, use [gvisor](https://gvisor.dev/docs/) to run these within their own independant kernel. 
 
 * Pod -> Pod 
     * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engress policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
