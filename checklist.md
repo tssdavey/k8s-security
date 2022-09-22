@@ -1,7 +1,7 @@
 # How to secure your k8s clusters in the real world
 
-It's not about if things go wrong - it's about what you do when they do.
-# Defence in Depth
+This is a non-exhaustive checklist of things you can do to secure your k8s clusters.
+
 ## Attack surface
 * Your nodes. 
     * If you're running k8s yourself put your nodes in a private subnet. Configure load balancers / firewalls to allow traffic in and out of your subnet.
@@ -34,7 +34,7 @@ Here we assume that something has been compromised, how do we stop it from getti
 
 * Pod -> Pod 
     * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engress policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
-    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster, if you're using a service mesh such as (Istio)[https://istio.io/latest/docs/tasks/security/authentication/mtls-migration/] or (Anthos)[https://cloud.google.com/service-mesh/docs/by-example/mtls] this will come out-of-the-box, otherwise you'll need to implement it yourself.
+    * Implement Pod -> Pod mtls to negate MitM attacks within your cluster, if you're using a service mesh such as [Istio](https://istio.io/latest/docs/tasks/security/authentication/mtls-migration/) or [Anthos](https://cloud.google.com/service-mesh/docs/by-example/mtls) this will come out-of-the-box, otherwise you'll need to implement it yourself.
 
 ## Alterting
 As security practitioners we want to be proactive rather than reactive, having logs so you can understand why an event happened is good. Having alters so that you can catch an event *as* it's happening is way better.
