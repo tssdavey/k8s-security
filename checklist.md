@@ -25,18 +25,18 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
     * At the end of the day this is probably what any malicious actor is after. If you're storing it in eg. an external database keep the creds in a k8s secret and inject it into pods at runtime. If your workloads are storing data, then be sure to use an encrypted storageclass and again store the creds in a secret injected at runtime, make sure that the data is also encrypted in transit if using eg. an NFS share.
 
 ## Within cluster
-Here we assume that something has been compromised, how do we stop it from getting worse.
-* Pod -> Node
+How do we stop a malicious actor from traversing within our cluster.
+* Pod to Node
     * Enforce containers running in non-privillaged mode and disallow writing to the root file system using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
-    * If your pod needs to write to root filesystem, or make syscalls then use apparmor or secomp to allow only what the pod requires and no more.
+    * If your pod needs to write to root filesystem, or make syscalls then use [apparmor](https://gitlab.com/apparmor/apparmor/-/wikis/Documentation) or [seccomp](https://kubernetes.io/docs/tutorials/security/seccomp/) to allow only what the pod requires and no more.
     * If you need to run untrusted images, use [gvisor](https://gvisor.dev/docs/) to run these within their own independant kernel. 
 
-* Pod -> Pod 
-    * Network policies. Enforce zero-trust networking between your pods by setting default deny ingress & engress policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
+* Pod to Pod
+    * Enforce zero-trust networking between your pods by setting default deny ingress & engress policies. Add explicit allow policies for the specific ports & protocols that your pods need to talk to each other on.
     * Implement Pod -> Pod mtls to negate MitM attacks within your cluster, if you're using a service mesh such as [Istio](https://istio.io/latest/docs/tasks/security/authentication/mtls-migration/) or [Anthos](https://cloud.google.com/service-mesh/docs/by-example/mtls) this will come out-of-the-box, otherwise you'll need to implement it yourself.
 
 ## Alterting
 As security practitioners we want to be proactive rather than reactive, having logs so you can understand why an event happened is good. Having alters so that you can catch an event *as* it's happening is way better.
 * Proactive monitoring
-    * Always use Falco. It comes with a comprehensive set of rule out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
-    * Use kube-api audit server logs. These can be really powerful if used well, I recommend auditing every change made to a secret or service account - and setting up a simple dashboard that alerts for example every time a kubectl get secret happens - this shouldn't be happening in your prod clusters.
+    * Always use [Falco](https://falco.org/). It comes with a comprehensive set of rule out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
+    * Use audit policies to capture logs from the kube-api server. These can be really powerful if used well, I recommend auditing every change made to a secret or service account - and setting up a simple dashboard that alerts every time one of these events happens.
