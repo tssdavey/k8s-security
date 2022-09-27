@@ -27,7 +27,7 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
 ## Within cluster
 How do we stop a malicious actor from traversing within our cluster.
 * Pod to Node
-    * Enforce containers running in non-privillaged mode and disallow writing to the root file system using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+    * Enforce containers running in non-privillaged mode and disallow writing to the root file system, and run your containers as non-root users using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
     * If your pod needs to write to root filesystem, or make syscalls then use [apparmor](https://gitlab.com/apparmor/apparmor/-/wikis/Documentation) or [seccomp](https://kubernetes.io/docs/tutorials/security/seccomp/) to allow only what the pod requires and no more.
     * If you need to run untrusted images, use [gvisor](https://gvisor.dev/docs/) to run these within their own independant kernel. 
 
