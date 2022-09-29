@@ -12,7 +12,7 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
 * Kube-api server. 
     * Lets start with the basics. Turn on authentication. This isn't as silly as you might think though. By default, the kubelet process actually accepts unauthenticated api calls (https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/)- turn this off asap
     * kubeconfig files, you can think of these a bit like database connection strings. They should be treated as secrets and stored in a suitable place such as AWS Secrets Manager or Hashicorp Vault.
-    * Take advantage of the fine-grained RBAC that k8d has out of the box.
+    * Use RBAC and the fine-grained control that it offers. Apply this to service accounts and users - enable it with the `--authorization-mode=RBAC` in kube-apiserver. For users logins, integrate with a third party auth provider for example using [dex](https://dexidp.io/docs/kubernetes/)
     * Enable encryption at rest for etcd
 
 * Your containers.
@@ -23,11 +23,13 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
 
 * Your data
     * At the end of the day this is probably what any malicious actor is after. If you're storing it in eg. an external database keep the creds in a k8s secret and inject it into pods at runtime. If your workloads are storing data, then be sure to use an encrypted storageclass and again store the creds in a secret injected at runtime, make sure that the data is also encrypted in transit if using eg. an NFS share.
+    * Rotate encryptions keys
+    * Seperate your etcd cluster
 
 ## Within cluster
 How do we stop a malicious actor from traversing within our cluster.
 * Pod to Node
-    * Enforce containers running in non-privillaged mode and disallow writing to the root file system, and run your containers as non-root users using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+    * Enforce containers running in non-privillaged mode and disallow writing to the file system, and run your containers as non-root users using [securitycontexts](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
     * If your pod needs to write to root filesystem, or make syscalls then use [apparmor](https://gitlab.com/apparmor/apparmor/-/wikis/Documentation) or [seccomp](https://kubernetes.io/docs/tutorials/security/seccomp/) to allow only what the pod requires and no more.
     * If you need to run untrusted images, use [gvisor](https://gvisor.dev/docs/) to run these within their own independant kernel. 
 
