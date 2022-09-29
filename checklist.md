@@ -43,4 +43,5 @@ As security practitioners we want to be proactive rather than reactive, having l
     * Always use [Falco](https://falco.org/). It comes with a comprehensive set of rule out the box which will will catch the lateral movement/privillage escalation stages of attacks, and allows for fine-grained control if there's a legitimate reason that a container needs to for example change ownership of files.
     * Use audit policies to capture logs from the kube-api server. These can be really powerful if used well, I recommend auditing every change made to a secret or service account - and setting up a simple dashboard that alerts every time one of these events happens.
 
-https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/
+Recommended further reading:
+* https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/
