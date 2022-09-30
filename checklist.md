@@ -8,12 +8,14 @@ This is a non-exhaustive checklist of things you can do to secure your k8s clust
     * Enforce zero-trust networking between your nodes. See [here](https://kubernetes.io/docs/reference/ports-and-protocols/) for the list of ports you will need to explicitly allow.
     * if you're using a cloud service like AKS, EKS or GKE each configures node access in their own way. If it's not needed completely lock down access to your nodes - AKS for example doesn't allow ssh to nodes by default.
     * If you do need access to your nodes adhere to the principal of least privillage, if the cloud provider manages your nodes, lock down access using their IAM, for example GKE offers a [roles/container.nodeServiceAccount](https://cloud.google.com/kubernetes-engine/docs/how-to/iam#predefined) role. If you're managing nodes yourself, eg. using EKS self managed nodes lock down access to the autoscaling group. more here***
+    * Keep your base OS updated.
 
 * K8s components. 
     * Lets start with the basics. Turn on authentication. This isn't as silly as you might think though. By default, the kubelet process actually accepts unauthenticated api calls (https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/)- turn this off asap
     * kubeconfig files, you can think of these a bit like database connection strings. They should be treated as secrets and stored in a suitable place such as AWS Secrets Manager or Hashicorp Vault.
     * Use RBAC and the fine-grained control that it offers. Apply this to service accounts and users and follow the principal of least privillage - enable it with the `--authorization-mode=RBAC` in kube-apiserver. For user's logins, integrate with a third party auth provider for example using [dex](https://dexidp.io/docs/kubernetes/)
     * Enable encryption at rest for etcd (https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) - there are a variety of providers to choose from.
+    * Keep components such as api server, kubelet, etcd up to date.
 
 * Your containers.
     * Ensure that your containers don't have exploitable vulnerabilities. Use trivy or similar on every container being run in your cluster.
